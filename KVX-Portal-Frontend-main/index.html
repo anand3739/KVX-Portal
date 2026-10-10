@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>kravix-portal</title>
+    <script>
+      (function() {
+        const darkMode = localStorage.getItem('darkMode') === 'true';
+        if (darkMode) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+
+        const primaryColor = localStorage.getItem('primaryColor') || 'blue';
+        document.documentElement.className = document.documentElement.className
+          .split(' ')
+          .filter(c => !c.startsWith('theme-'))
+          .join(' ');
+        document.documentElement.classList.add('theme-' + primaryColor);
+
+        const fontSize = localStorage.getItem('fontSize') || 'medium';
+        document.documentElement.className = document.documentElement.className
+          .split(' ')
+          .filter(c => !c.startsWith('font-size-'))
+          .join(' ');
+        document.documentElement.classList.add('font-size-' + fontSize);
+
+        const layoutDensity = localStorage.getItem('layoutDensity') || 'Standard';
+        document.documentElement.className = document.documentElement.className
+          .split(' ')
+          .filter(c => !c.startsWith('density-'))
+          .join(' ');
+        document.documentElement.classList.add('density-' + layoutDensity.toLowerCase());
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

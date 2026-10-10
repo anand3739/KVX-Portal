@@ -1,0 +1,53 @@
+{
+  "name": "KVX Portal Backend",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:18",
+
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "18"
+    }
+  },
+
+  "postCreateCommand": "npm install && bash scripts/setup-env.sh",
+
+  "remoteEnv": {
+    "NODE_ENV": "development",
+    "PORT": "5000",
+    "ALLOW_START_WITHOUT_DB": "true",
+    "FRONTEND_URL": "${localEnv:FRONTEND_URL}",
+    "DATABASE_URL": "${localEnv:DATABASE_URL}",
+    "DB_HOST": "${localEnv:DB_HOST}",
+    "DB_PORT": "${localEnv:DB_PORT}",
+    "DB_NAME": "${localEnv:DB_NAME}",
+    "DB_USER": "${localEnv:DB_USER}",
+    "DB_PASSWORD": "${localEnv:DB_PASSWORD}",
+    "DB_SSL": "${localEnv:DB_SSL}",
+    "JWT_SECRET": "${localEnv:JWT_SECRET}",
+    "JWT_REFRESH_SECRET": "${localEnv:JWT_REFRESH_SECRET}",
+    "SMTP_HOST": "${localEnv:SMTP_HOST}",
+    "SMTP_PORT": "${localEnv:SMTP_PORT}",
+    "SMTP_USER": "${localEnv:SMTP_USER}",
+    "SMTP_PASSWORD": "${localEnv:SMTP_PASSWORD}"
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-node-azure-pack"
+      ],
+      "settings": {
+        "terminal.integrated.shell.linux": "/bin/bash"
+      }
+    }
+  },
+
+  "forwardPorts": [5000],
+  "portsAttributes": {
+    "5000": {
+      "label": "KVX Backend API",
+      "onAutoForward": "notify"
+    }
+  }
+}
