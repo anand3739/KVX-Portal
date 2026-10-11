@@ -3,17 +3,36 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-// ⭐ FIXED: SSL always enabled for Supabase
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false, // Required for Supabase
-  },
-  max: 20,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 15000,
-  keepAlive: true,
-});
+// ⭐ Database Pool Configuration (supports DATABASE_URL or discrete DB_* env variables)
+const getPoolConfig = () => {
+  const sslConfig = { rejectUnauthorized: false };
+
+  if (process.env.DATABASE_URL) {
+    return {
+      connectionString: process.env.DATABASE_URL,
+      ssl: sslConfig,
+      max: 20,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 15000,
+      keepAlive: true,
+    };
+  }
+
+  return {
+    host: process.env.DB_HOST || 'localhost',
+    port: Number(process.env.DB_PORT) || 5432,
+    database: process.env.DB_NAME || 'postgres',
+    user: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASSWORD,
+    ssl: process.env.DB_SSL === 'false' ? false : sslConfig,
+    max: 20,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 15000,
+    keepAlive: true,
+  };
+};
+
+const pool = new Pool(getPoolConfig());
 
 // Handle idle client connection drops gracefully
 pool.on('error', (err) => {

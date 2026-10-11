@@ -174,12 +174,16 @@ const initHelpCenterTables = async () => {
       }
     }
   } catch (err) {
-    console.error("Help Center Table Init Error:", err.message);
+    if (process.env.ALLOW_START_WITHOUT_DB !== 'true') {
+      console.error("Help Center Table Init Error:", err.message);
+    }
   }
 };
 
-// Run table initialization on startup
-initHelpCenterTables();
+// Run table initialization on startup if database is available
+if (process.env.NODE_ENV !== 'test') {
+  initHelpCenterTables().catch(() => {});
+}
 
 const getArticles = async ({ category, search } = {}) => {
   let sql = `SELECT * FROM help_articles WHERE 1=1`;
