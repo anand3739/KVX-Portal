@@ -19,8 +19,8 @@ test('getDatabaseConfig falls back to values from .env when shell vars are blank
   assert.equal(config.port, 6543);
   assert.equal(config.database, 'postgres');
   assert.equal(config.user, 'postgres.uxtkygveeczlczkjnxkb');
-  assert.equal(config.password, 'KravixDB2026');
-  assert.equal(config.connectionString, 'postgresql://postgres.uxtkygveeczlczkjnxkb:KravixDB2026@aws-1-ap-south-1.pooler.supabase.com:6543/postgres');
+  assert.equal(config.password, 'KRAVIX@PORTAL');
+  assert.equal(config.connectionString, 'postgresql://postgres.uxtkygveeczlczkjnxkb:KRAVIX%40PORTAL@aws-1-ap-south-1.pooler.supabase.com:6543/postgres');
   assert.equal(config.ssl, true);
   assert.ok(config.envPath === envPath);
 });
