@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Clock,
   Calendar,
@@ -23,6 +24,7 @@ import { mockLogin } from "../../services/mockAuthService";
 import toast from "react-hot-toast";
 
 const Attendance = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [attendanceData, setAttendanceData] = useState({
@@ -118,11 +120,30 @@ const Attendance = () => {
       case 'present': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
       case 'absent': return 'bg-rose-100 text-rose-700 border-rose-200';
       case 'late': return 'bg-amber-100 text-amber-700 border-amber-200';
-      case 'halfday': return 'bg-orange-100 text-orange-700 border-orange-200';
+      case 'halfday':
+      case 'half-day': return 'bg-orange-100 text-orange-700 border-orange-200';
       case 'wfh': return 'bg-purple-100 text-purple-700 border-purple-200';
       case 'weekend': return 'bg-gray-100 text-gray-500 border-gray-200';
-      default: return 'bg-gray-100 text-gray-700';
+      case 'upcoming': return 'bg-gray-50 text-gray-400 border-gray-100';
+      default: return 'bg-gray-50 text-gray-700 border-gray-100';
     }
+  };
+
+  const getRecordDateString = (record) => {
+    if (!record) return '';
+    if (record.login_time) {
+      const d = new Date(record.login_time);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+    if (record.date) {
+      if (typeof record.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(record.date)) {
+        return record.date;
+      }
+      const d = new Date(record.date);
+      const adjusted = new Date(d.getTime() + 6 * 3600 * 1000);
+      return `${adjusted.getFullYear()}-${String(adjusted.getMonth() + 1).padStart(2, '0')}-${String(adjusted.getDate()).padStart(2, '0')}`;
+    }
+    return '';
   };
 
   const getDaysInMonth = () => {
@@ -153,7 +174,10 @@ const Attendance = () => {
     const daysInMonth = getDaysInMonth();
     const firstDay = getFirstDayOfMonth();
     const days = [];
-    const monthData = attendanceData.monthly;
+    const monthData = attendanceData.monthly || [];
+
+    const now = new Date();
+    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
     // Add empty cells for days before month starts
     for (let i = 0; i < firstDay; i++) {
@@ -163,26 +187,48 @@ const Attendance = () => {
     // Add cells for each day of the month
     for (let day = 1; day <= daysInMonth; day++) {
       const dateStr = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      const dayData = monthData.find(d => d.date === dateStr);
-      const status = dayData?.status || 'absent';
-      const isToday = new Date().toDateString() === new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day).toDateString();
+      const dayData = monthData.find(d => getRecordDateString(d) === dateStr);
+      const dayOfWeek = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day).getDay();
+      const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+      const isFuture = dateStr > todayStr;
+      const isToday = dateStr === todayStr;
+
+      let status = 'absent';
+      if (dayData?.status) {
+        status = dayData.status;
+      } else if (isWeekend) {
+        status = 'weekend';
+      } else if (isFuture) {
+        status = 'upcoming';
+      }
 
       days.push(
         <td 
           key={day} 
-          className={`p-2 border ${isToday ? 'border-blue-500 bg-blue-50' : 'border-gray-100'}`}
+          className={`p-2 border ${isToday ? 'border-blue-500 bg-blue-50/50' : 'border-gray-100'}`}
         >
-          <div className={`h-20 p-2 rounded-lg cursor-pointer transition-all ${getStatusColor(status)}`}>
+          <div className={`h-20 p-2 rounded-lg transition-all ${getStatusColor(status)}`}>
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">{day}</span>
+              <span className="text-sm font-semibold">{day}</span>
+              {isToday && (
+                <span className="text-[10px] bg-blue-600 text-white px-1.5 py-0.5 rounded-full font-medium">
+                  Today
+                </span>
+              )}
             </div>
-            {dayData && dayData.status !== 'weekend' && dayData.status !== 'absent' && (
+            {dayData && status !== 'weekend' ? (
               <div className="mt-1 text-xs">
-                <div>
+                <div className="truncate">
                   {dayData.login_time ? new Date(dayData.login_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--'} 
-                  - {dayData.logout_time ? new Date(dayData.logout_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--'}
+                  {dayData.logout_time ? ` - ${new Date(dayData.logout_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : ''}
                 </div>
-                <div className="font-medium mt-1">{dayData.total_hours || 0}h</div>
+                <div className="font-medium mt-1">
+                  {dayData.total_hours || dayData.net_hours || '0'}h • <span className="capitalize">{status}</span>
+                </div>
+              </div>
+            ) : (
+              <div className="mt-2 text-xs capitalize text-gray-500 font-medium">
+                {status}
               </div>
             )}
           </div>
@@ -258,7 +304,10 @@ const Attendance = () => {
               Clock Out
             </button>
           ) : null}
-          <button className="px-4 py-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors text-sm">
+          <button 
+            onClick={() => navigate("/employee/leave")}
+            className="px-4 py-2 bg-white/10 rounded-lg hover:bg-white/20 transition-colors text-sm font-medium"
+          >
             Request Leave
           </button>
         </div>
