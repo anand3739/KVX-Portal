@@ -5,7 +5,7 @@ export const DEMO_USERS = {
   "admin@kravix.com": {
     password: "Admin@123",
     user: {
-      id: 1,
+      id: "e50f843e-5b70-492a-acab-be46b3d39a03",
       email: "admin@kravix.com",
       role: "admin",
       first_name: "Admin",
@@ -25,7 +25,7 @@ export const DEMO_USERS = {
   "hr@kravix.com": {
     password: "HR@123",
     user: {
-      id: 2,
+      id: "eb178fd0-e3b2-48a0-a308-a52136a1b10c",
       email: "hr@kravix.com",
       role: "hr",
       first_name: "HR",
@@ -45,7 +45,7 @@ export const DEMO_USERS = {
   "employee@kravix.com": {
     password: "Emp@123",
     user: {
-      id: 3,
+      id: "665a2008-4e14-468e-8015-542384e26f1e",
       email: "employee@kravix.com",
       role: "employee",
       first_name: "John",
@@ -71,7 +71,7 @@ export const DEMO_USERS = {
   "ceo@kravix.com": {
     password: "CEO@123",
     user: {
-      id: 4,
+      id: "7c6da407-bac5-4569-ae19-49dfff26aadc",
       email: "ceo@kravix.com",
       role: "ceo",
       first_name: "CEO",

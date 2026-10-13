@@ -18,6 +18,7 @@ import {
   Loader
 } from "lucide-react";
 import { attendanceService } from "../../services/attendanceService";
+import { authService } from "../../services/authService";
 import { mockLogin } from "../../services/mockAuthService";
 import toast from "react-hot-toast";
 
@@ -55,9 +56,16 @@ const Attendance = () => {
   const fetchUserData = async () => {
     try {
       const response = await authService.getCurrentUser();
-      setUser(response.user);
+      if (response?.user) {
+        setUser(response.user);
+        return;
+      }
     } catch (error) {
-      console.error("Failed to fetch user:", error);
+      console.warn("Using stored session user for attendance profile");
+    }
+    const storedUser = authService.getStoredUser();
+    if (storedUser) {
+      setUser(storedUser);
     }
   };
 

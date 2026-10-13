@@ -1,6 +1,6 @@
 const DEMO_USERS = {
   'admin@kravix.com': {
-    id: 'demo-admin',
+    id: 'e50f843e-5b70-492a-acab-be46b3d39a03',
     employee_id: 'ADMIN001',
     email: 'admin@kravix.com',
     password: 'Admin@123',
@@ -14,7 +14,7 @@ const DEMO_USERS = {
     profile_picture: null,
   },
   'hr@kravix.com': {
-    id: 'demo-hr',
+    id: 'eb178fd0-e3b2-48a0-a308-a52136a1b10c',
     employee_id: 'HR001',
     email: 'hr@kravix.com',
     password: 'HR@123',
@@ -28,7 +28,7 @@ const DEMO_USERS = {
     profile_picture: null,
   },
   'ceo@kravix.com': {
-    id: 'demo-ceo',
+    id: '7c6da407-bac5-4569-ae19-49dfff26aadc',
     employee_id: 'CEO001',
     email: 'ceo@kravix.com',
     password: 'CEO@123',
@@ -42,7 +42,7 @@ const DEMO_USERS = {
     profile_picture: null,
   },
   'employee@kravix.com': {
-    id: 'demo-employee',
+    id: '665a2008-4e14-468e-8015-542384e26f1e',
     employee_id: 'EMP001',
     email: 'employee@kravix.com',
     password: 'Emp@123',
